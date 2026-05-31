@@ -1,0 +1,52 @@
+{
+  "name": "contextnudge",
+  "version": "0.1.0",
+  "description": "Local-first personal memory layer for AI coding agents. Gives Copilot and other AI tools a private local memory of useful developer context.",
+  "type": "module",
+  "bin": {
+    "contextnudge": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc && chmod 755 dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit"
+  },
+  "files": [
+    "dist/"
+  ],
+  "keywords": [
+    "mcp",
+    "copilot",
+    "memory",
+    "local-first",
+    "ai",
+    "developer-tools",
+    "vscode",
+    "cursor",
+    "windsurf"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "better-sqlite3": "^11.7.0",
+    "commander": "^13.1.0",
+    "nanoid": "^5.1.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["better-sqlite3"]
+  }
+}
