@@ -11,7 +11,7 @@ ContextNudge gives GitHub Copilot, Cursor, Windsurf, and Claude a private local 
 ## How it works
 
 ```
-You run:  npx contextnudge init vscode
+You run:  npx -y contextnudge init vscode
 
 ContextNudge:
   1. Creates a local SQLite database at ~/.contextnudge/
@@ -33,16 +33,17 @@ No global install required.
 
 ```bash
 # Initialize for VS Code + GitHub Copilot
-npx contextnudge init vscode
+npx -y contextnudge init vscode
 
 # Save your first memory
-npx contextnudge remember "This repo uses pnpm, not npm."
+npx -y contextnudge remember "This repo uses pnpm, not npm."
 
 # Search memories
-npx contextnudge search "how do I run tests here?"
+npx -y contextnudge search "how do I run tests here?"
 ```
 
 Restart VS Code after init — the MCP server starts automatically and Copilot will begin checking your memory.
+You only need to run init once per repository (or again if config files were removed).
 
 ---
 
@@ -57,10 +58,10 @@ Restart VS Code after init — the MCP server starts automatically and Copilot w
 
 ```bash
 # Configure a single IDE
-npx contextnudge init cursor
+npx -y contextnudge init cursor
 
 # Configure all IDEs at once
-npx contextnudge init --all
+npx -y contextnudge init --all
 ```
 
 ---
@@ -68,22 +69,22 @@ npx contextnudge init --all
 ## CLI reference
 
 ```bash
-npx contextnudge init <ide>           # Set up IDE integration (vscode, cursor, windsurf, claude)
-npx contextnudge init --all           # Configure all supported IDEs
+npx -y contextnudge init <ide>           # Set up IDE integration (vscode, cursor, windsurf, claude)
+npx -y contextnudge init --all           # Configure all supported IDEs
 
-npx contextnudge remember "<text>"    # Save a memory
+npx -y contextnudge remember "<text>"    # Save a memory
   --scope   global|workspace|repo|file-pattern   (default: workspace)
   --workspace <path>                  Workspace path this memory applies to
   --repo <owner/repo>                 Repo identifier
   --tags <tag1,tag2>                  Tags for categorization
   --file-pattern <glob>               File pattern (for file-pattern scope)
 
-npx contextnudge search "<query>"     # Search memories
-npx contextnudge list                 # List all memories
-npx contextnudge forget <id>          # Delete a memory
-npx contextnudge status               # Show database stats
-npx contextnudge export               # Export all memories as JSON
-npx contextnudge doctor               # Diagnose setup issues
+npx -y contextnudge search "<query>"     # Search memories
+npx -y contextnudge list                 # List all memories
+npx -y contextnudge forget <id>          # Delete a memory
+npx -y contextnudge status               # Show database stats
+npx -y contextnudge export               # Export all memories as JSON
+npx -y contextnudge doctor               # Diagnose setup issues
 ```
 
 ---
@@ -102,11 +103,11 @@ npx contextnudge doctor               # Diagnose setup issues
 ## Good memories to save
 
 ```bash
-npx contextnudge remember "Run integration tests with ./gradlew integrationTest -Pprofile=local." --scope repo
-npx contextnudge remember "Do not edit generated files under src/generated." --scope repo
-npx contextnudge remember "CustomerId should be a value object, not a raw string." --scope repo --tags "architecture,domain"
-npx contextnudge remember "Mongo tests require testcontainers running locally." --scope repo --tags "testing"
-npx contextnudge remember "I prefer small commits and minimal refactors unless asked." --scope global --tags "preferences"
+npx -y contextnudge remember "Run integration tests with ./gradlew integrationTest -Pprofile=local." --scope repo
+npx -y contextnudge remember "Do not edit generated files under src/generated." --scope repo
+npx -y contextnudge remember "CustomerId should be a value object, not a raw string." --scope repo --tags "architecture,domain"
+npx -y contextnudge remember "Mongo tests require testcontainers running locally." --scope repo --tags "testing"
+npx -y contextnudge remember "I prefer small commits and minimal refactors unless asked." --scope global --tags "preferences"
 ```
 
 ---
@@ -152,7 +153,9 @@ The database is yours. You can inspect it with any SQLite client, export it with
 
 ## Updates
 
-ContextNudge auto-updates. VS Code (and other IDEs) launch the MCP server via `npx -y contextnudge --mcp`, which always fetches the latest published version on IDE restart. No manual update step needed.
+ContextNudge auto-updates. VS Code (and other IDEs) launch the MCP server via `npx -y contextnudge@latest --mcp`, which fetches the latest published version on IDE restart. No manual update step needed.
+
+If a repository was initialized before this behavior, run `npx -y contextnudge@latest init <ide>` once in that repo to refresh its MCP config.
 
 ---
 

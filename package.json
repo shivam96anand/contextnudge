@@ -1,13 +1,14 @@
 {
   "name": "contextnudge",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Local-first personal memory layer for AI coding agents. Gives Copilot and other AI tools a private local memory of useful developer context.",
   "type": "module",
   "bin": {
-    "contextnudge": "./dist/index.js"
+    "contextnudge": "dist/index.js"
   },
   "scripts": {
     "build": "tsc && chmod 755 dist/index.js",
+    "prepublishOnly": "pnpm build",
     "dev": "tsx src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -27,7 +28,7 @@
     "cursor",
     "windsurf"
   ],
-  "author": "",
+  "author": "Shivam Anand <shivam1996anand@gmail.com>",
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
@@ -47,6 +48,8 @@
     "vitest": "^3.0.0"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["better-sqlite3"]
+    "onlyBuiltDependencies": [
+      "better-sqlite3"
+    ]
   }
 }

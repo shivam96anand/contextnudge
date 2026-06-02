@@ -156,6 +156,38 @@ export function insertMemory(
   );
 }
 
+export function findActiveDuplicateMemory(
+  database: Database.Database,
+  fingerprint: {
+    summary: string;
+    scope: MemoryScope;
+    workspacePath: string | null;
+    repoIdentifier: string | null;
+    filePattern: string | null;
+  }
+): Memory | null {
+  const row = database
+    .prepare(
+      `SELECT * FROM memories
+       WHERE status = 'active'
+         AND lower(summary) = lower(?)
+         AND scope = ?
+         AND workspace_path IS ?
+         AND repo_identifier IS ?
+         AND file_pattern IS ?
+       LIMIT 1`
+    )
+    .get(
+      fingerprint.summary,
+      fingerprint.scope,
+      fingerprint.workspacePath,
+      fingerprint.repoIdentifier,
+      fingerprint.filePattern
+    ) as MemoryRow | undefined;
+
+  return row ? rowToMemory(row) : null;
+}
+
 export function getMemoryById(
   database: Database.Database,
   id: string

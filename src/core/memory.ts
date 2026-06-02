@@ -2,6 +2,7 @@ import { nanoid } from "nanoid";
 import { getDatabase } from "../storage/db.js";
 import {
   insertMemory,
+  findActiveDuplicateMemory,
   getMemoryById,
   updateMemoryRow,
   deleteMemory,
@@ -17,7 +18,9 @@ import type {
 } from "../types.js";
 
 export function saveMemory(input: SaveMemoryInput): Memory {
-  const scan = scanForSecrets(input.summary);
+  const normalizedSummary = input.summary.trim().replace(/\s+/g, " ");
+
+  const scan = scanForSecrets(normalizedSummary);
   if (!scan.safe) {
     throw new Error(
       `Memory rejected: detected potential secrets (${scan.detectedSecrets.join(", ")}). ` +
@@ -26,13 +29,31 @@ export function saveMemory(input: SaveMemoryInput): Memory {
   }
 
   const now = new Date().toISOString();
+  const scope = input.scope ?? "workspace";
+  const workspacePath = input.workspacePath ?? null;
+  const repoIdentifier = input.repoIdentifier ?? null;
+  const filePattern = input.filePattern ?? null;
+
+  const db = getDatabase();
+  const duplicate = findActiveDuplicateMemory(db, {
+    summary: normalizedSummary,
+    scope,
+    workspacePath,
+    repoIdentifier,
+    filePattern,
+  });
+
+  if (duplicate) {
+    return duplicate;
+  }
+
   const memory: Memory = {
     id: nanoid(12),
-    summary: input.summary.trim(),
-    scope: input.scope ?? "workspace",
-    workspacePath: input.workspacePath ?? null,
-    repoIdentifier: input.repoIdentifier ?? null,
-    filePattern: input.filePattern ?? null,
+    summary: normalizedSummary,
+    scope,
+    workspacePath,
+    repoIdentifier,
+    filePattern,
     tags: input.tags ?? [],
     source: input.source ?? "user",
     confidence: input.confidence ?? 1.0,
@@ -44,7 +65,6 @@ export function saveMemory(input: SaveMemoryInput): Memory {
     expiresAt: input.expiresAt ?? null,
   };
 
-  const db = getDatabase();
   insertMemory(db, memory);
   return memory;
 }

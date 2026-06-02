@@ -74,6 +74,8 @@ export function createMcpServer(): McpServer {
       filePattern: z.string().optional().describe("File glob pattern this memory applies to (for file-pattern scope)"),
       tags: z.array(z.string()).optional().describe("Tags for categorization"),
       source: z.string().optional().describe("Source of this memory (e.g., 'copilot', 'user', 'debug-session')"),
+      confidence: z.number().min(0).max(1).optional().describe("Confidence score from 0.0 to 1.0"),
+      expiresAt: z.string().optional().describe("Optional expiration date (ISO 8601) for short-lived memories"),
     },
     async (params) => {
       try {
@@ -85,6 +87,8 @@ export function createMcpServer(): McpServer {
           filePattern: params.filePattern,
           tags: params.tags,
           source: params.source ?? "copilot",
+          confidence: params.confidence,
+          expiresAt: params.expiresAt,
         });
 
         return {
