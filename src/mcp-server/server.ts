@@ -4,11 +4,12 @@ import { saveMemory, forgetMemory, updateMemory, listMemories, runRetention } fr
 import { searchMemory } from "../retrieval/ranker.js";
 import { getDatabase } from "../storage/db.js";
 import { getMemoryStats } from "../storage/db.js";
+import { getPackageVersion } from "../version.js";
 
 export function createMcpServer(): McpServer {
   const server = new McpServer({
     name: "contextnudge",
-    version: "0.1.0",
+    version: getPackageVersion(),
   });
 
   // Run retention on startup

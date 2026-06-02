@@ -7,6 +7,7 @@ import { forgetCommand } from "./commands/forget.js";
 import { statusCommand } from "./commands/status.js";
 import { exportCommand } from "./commands/export.js";
 import { doctorCommand } from "./commands/doctor.js";
+import { getPackageVersion } from "../version.js";
 
 export function createCli(): Command {
   const program = new Command();
@@ -14,7 +15,7 @@ export function createCli(): Command {
   program
     .name("contextnudge")
     .description("Local-first personal memory layer for AI coding agents")
-    .version("0.1.0");
+    .version(getPackageVersion());
 
   program.addCommand(initCommand());
   program.addCommand(rememberCommand());
