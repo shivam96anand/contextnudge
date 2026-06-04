@@ -87,3 +87,17 @@ src/
 - Do not store raw conversation transcripts.
 - Do not add vector embeddings or an embedding model dependency in v1 — FTS5 + heuristic scoring is intentional.
 - Do not modify the generated adapter instruction files in `src/adapters/` to include project-specific rules — they are templates for user repos, not for this codebase.
+
+
+<!-- ContextNudge: Auto-generated instructions for GitHub Copilot -->
+<!-- Do not remove this section if you want Copilot to use your local memory -->
+
+## ContextNudge – Local Memory Instructions
+
+Before starting workspace-specific, repo-specific, debugging, testing, setup, refactoring, or architecture work, call the `search_memory` tool from the ContextNudge MCP server. Use the current user request, workspace name, repository identity, active file path, and relevant error text as the memory search query. Use retrieved memories only if clearly relevant. Ignore stale, unrelated, or low-confidence memories.
+
+When you discover a stable repo convention, recurring fix, confirmed build/test command, architectural decision, or personal coding preference, call `save_memory` with a concise one-sentence summary. Use appropriate scope (workspace, repo, global, or file-pattern) and relevant tags.
+
+**Never save**: secrets, credentials, tokens, API keys, customer data, personal data, raw chat transcripts, full stack traces, or temporary guesses.
+
+<!-- End ContextNudge -->

@@ -1,0 +1,13 @@
+{
+  "servers": {
+    "contextnudge": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "contextnudge@latest",
+        "--mcp"
+      ]
+    }
+  }
+}
