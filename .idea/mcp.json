@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "contextnudge": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "contextnudge@latest",
+        "--mcp"
+      ]
+    }
+  }
+}

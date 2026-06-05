@@ -2,7 +2,7 @@
 
 > Local-first personal memory for AI coding agents.
 
-ContextNudge gives GitHub Copilot, Cursor, Windsurf, and Claude a private local memory of your developer context — repo conventions, recurring fixes, build commands, architectural decisions, and personal preferences — so you never have to explain the same thing twice.
+ContextNudge gives GitHub Copilot, Cursor, Windsurf, Claude, and IntelliJ AI Assistant a private local memory of your developer context — repo conventions, recurring fixes, build commands, architectural decisions, and personal preferences — so you never have to explain the same thing twice.
 
 **No cloud. No team sharing. No raw chat logging. Just your memory, on your machine.**
 
@@ -55,6 +55,7 @@ You only need to run init once per repository (or again if config files were rem
 | Cursor | `init cursor` | `.cursor/mcp.json` | `.cursorrules` |
 | Windsurf | `init windsurf` | `.windsurf/mcp.json` | `.windsurfrules` |
 | Claude Desktop | `init claude` | `~/Library/.../Claude/claude_desktop_config.json` | `CLAUDE.md` |
+| IntelliJ + AI Assistant | `init intellij` | `.idea/mcp.json` | `JUNIE.md` |
 
 ```bash
 # Configure a single IDE
@@ -69,7 +70,7 @@ npx -y contextnudge init --all
 ## CLI reference
 
 ```bash
-npx -y contextnudge init <ide>           # Set up IDE integration (vscode, cursor, windsurf, claude)
+npx -y contextnudge init <ide>           # Set up IDE integration (vscode, cursor, windsurf, claude, intellij)
 npx -y contextnudge init --all           # Configure all supported IDEs
 
 npx -y contextnudge remember "<text>"    # Save a memory
@@ -185,7 +186,7 @@ src/
 ├── core/             Memory engine (save, search, forget, update)
 ├── retrieval/        FTS5 search + composite scoring
 ├── mcp-server/       MCP tool registration + stdio transport
-├── adapters/         IDE-specific config writers (vscode, cursor, windsurf, claude)
+├── adapters/         IDE-specific config writers (vscode, cursor, windsurf, claude, intellij)
 └── cli/              Commander CLI commands
 ```
 

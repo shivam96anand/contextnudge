@@ -1,6 +1,6 @@
 {
   "name": "contextnudge",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Local-first personal memory layer for AI coding agents. Gives Copilot and other AI tools a private local memory of useful developer context.",
   "type": "module",
   "bin": {
