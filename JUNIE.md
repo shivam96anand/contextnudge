@@ -1,8 +1,10 @@
 # ContextNudge – Local Memory Instructions
 
-Before starting workspace-specific, repo-specific, debugging, testing, setup, refactoring, or architecture work, call the `search_memory` tool from the ContextNudge MCP server. Use the current user request, workspace name, repository identity, active file path, and relevant error text as the memory search query. Use retrieved memories only if clearly relevant. Ignore stale, unrelated, or low-confidence memories.
+**At the start of every task, before any other tool call, run `search_memory` first.** Build the query from the user request plus the workspace name, repository identity, active file path, and any relevant error text. Once results return, use only the memories that are clearly relevant and ignore stale or low-confidence ones — but always run the search, even for small tasks.
 
-When you discover a stable repo convention, recurring fix, confirmed build/test command, architectural decision, or personal coding preference, call `save_memory`.
+If `search_memory` returns nothing, this workspace has no memories yet. Treat the task as a chance to seed them and plan to save what you learn.
+
+**At the end of a task, call `save_memory`** whenever you established something durable and reusable: a stable repo convention, a recurring fix, a confirmed build or test command, an architectural decision, or a personal coding preference. Only skip saving when nothing durable came out of the task — do not save filler just to save something.
 
 Save one atomic memory per call:
 - Prefer one actionable fact, not a paragraph, checklist, or multi-topic dump.

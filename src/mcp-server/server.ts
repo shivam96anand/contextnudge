@@ -22,7 +22,7 @@ export function createMcpServer(): McpServer {
 
   server.tool(
     "search_memory",
-    "Search the developer's local memory for relevant context. Use this before workspace-specific, repo-specific, debugging, testing, setup, refactoring, or architecture work.",
+    "ALWAYS call this FIRST, before any other tool, at the start of every coding task. Searches the developer's local memory for relevant context — conventions, recurring fixes, build/test commands, architectural decisions, and preferences. Build the query from the user request plus the workspace name, repo identity, and active file path. Calling it early is cheap and prevents repeating past mistakes.",
     {
       query: z.string().describe("Natural language search query describing what context you need"),
       workspacePath: z.string().optional().describe("Absolute path to the current workspace root"),
@@ -44,7 +44,15 @@ export function createMcpServer(): McpServer {
 
         if (results.length === 0) {
           return {
-            content: [{ type: "text", text: "No relevant memories found." }],
+            content: [
+              {
+                type: "text",
+                text:
+                  "No relevant memories found for this workspace yet. If this task " +
+                  "establishes a durable convention, fix, command, or decision, call " +
+                  "save_memory before you finish so future sessions start with this context.",
+              },
+            ],
           };
         }
 
@@ -66,7 +74,7 @@ export function createMcpServer(): McpServer {
 
   server.tool(
     "save_memory",
-    "Save a piece of developer context to local memory. Use when discovering stable repo conventions, recurring fixes, build commands, architectural decisions, or personal coding preferences. Never save secrets, credentials, tokens, or temporary guesses.",
+    "Call this at the END of a task to persist a durable, reusable fact for future sessions — a stable repo convention, recurring fix, confirmed build/test command, architectural decision, or coding preference. Especially important when an earlier search_memory returned nothing. Save one atomic fact per call. Never save secrets, credentials, tokens, customer data, or temporary guesses.",
     {
       summary: z.string().describe("Concise one-sentence or short-paragraph memory to save"),
       scope: z.enum(["global", "workspace", "repo", "file-pattern"]).optional().describe("Memory scope (default: workspace)"),
