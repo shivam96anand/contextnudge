@@ -52,10 +52,13 @@ You only need to run init once per repository (or again if config files were rem
 | IDE | Command | MCP config | Instruction file |
 |-----|---------|------------|-----------------|
 | VS Code + Copilot | `init vscode` | `.vscode/mcp.json` | `.github/copilot-instructions.md` |
+| Claude Code (CLI or VS Code extension) | `init claude-code` | `.mcp.json` | `CLAUDE.md` |
 | Cursor | `init cursor` | `.cursor/mcp.json` | `.cursorrules` |
 | Windsurf | `init windsurf` | `.windsurf/mcp.json` | `.windsurfrules` |
 | Claude Desktop | `init claude` | `~/Library/.../Claude/claude_desktop_config.json` | `CLAUDE.md` |
 | IntelliJ + AI Assistant | `init intellij` | `.idea/mcp.json` | `JUNIE.md` |
+
+Using VS Code with both Copilot and Claude Code? Run `init vscode` and `init claude-code` — they write separate config files and share the same local memory store.
 
 ```bash
 # Configure a single IDE
@@ -70,7 +73,7 @@ npx -y contextnudge init --all
 ## CLI reference
 
 ```bash
-npx -y contextnudge init <ide>           # Set up IDE integration (vscode, cursor, windsurf, claude, intellij)
+npx -y contextnudge init <ide>           # Set up IDE integration (vscode, cursor, windsurf, claude, claude-code, intellij)
 npx -y contextnudge init --all           # Configure all supported IDEs
 
 npx -y contextnudge remember "<text>"    # Save a memory

@@ -11,7 +11,7 @@ export function initCommand(): Command {
   const cmd = new Command("init");
 
   cmd
-    .description("Initialize ContextNudge for an IDE (vscode, cursor, windsurf, claude, intellij)")
+    .description(`Initialize ContextNudge for an IDE (${getAllAdapterNames().join(", ")})`)
     .argument("[ide]", `IDE to configure (${getAllAdapterNames().join(", ")}, or --all)`)
     .option("--all", "Configure all detected IDEs")
     .action(async (ide: string | undefined, options: { all?: boolean }) => {
@@ -128,6 +128,11 @@ function getExpectedOutputPaths(adapterName: string, workspaceRoot: string): str
       }
       return [claudeConfigPath, path.join(workspaceRoot, "CLAUDE.md")];
     }
+    case "claude-code":
+      return [
+        path.join(workspaceRoot, ".mcp.json"),
+        path.join(workspaceRoot, "CLAUDE.md"),
+      ];
     case "intellij":
       return [
         path.join(workspaceRoot, ".idea", "mcp.json"),

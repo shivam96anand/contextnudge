@@ -28,6 +28,7 @@ src/
 │   ├── cursor.ts          # Writes .cursor/mcp.json + .cursorrules
 │   ├── windsurf.ts        # Writes .windsurf/mcp.json + .windsurfrules
 │   ├── claude.ts          # Writes claude_desktop_config.json + CLAUDE.md
+│   ├── claude-code.ts     # Writes .mcp.json + CLAUDE.md (Claude Code CLI / VS Code extension)
 │   └── index.ts           # Adapter registry, getAdapter(), getAllAdapters()
 └── cli/
     ├── index.ts            # Commander program

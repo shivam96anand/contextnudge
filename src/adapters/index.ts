@@ -3,6 +3,7 @@ import { VSCodeAdapter } from "./vscode.js";
 import { CursorAdapter } from "./cursor.js";
 import { WindsurfAdapter } from "./windsurf.js";
 import { ClaudeAdapter } from "./claude.js";
+import { ClaudeCodeAdapter } from "./claude-code.js";
 import { IntelliJAdapter } from "./intellij.js";
 
 const adapters: Record<string, () => IDEAdapter> = {
@@ -10,6 +11,7 @@ const adapters: Record<string, () => IDEAdapter> = {
   cursor: () => new CursorAdapter(),
   windsurf: () => new WindsurfAdapter(),
   claude: () => new ClaudeAdapter(),
+  "claude-code": () => new ClaudeCodeAdapter(),
   intellij: () => new IntelliJAdapter(),
 };
 
