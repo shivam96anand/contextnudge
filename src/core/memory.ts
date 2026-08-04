@@ -10,6 +10,7 @@ import {
   expireOldMemories,
 } from "../storage/db.js";
 import { scanForSecrets } from "../safety/secret-scanner.js";
+import { resolveWorkspacePath, resolveRepoIdentifier } from "./context.js";
 import type {
   Memory,
   SaveMemoryInput,
@@ -30,8 +31,12 @@ export function saveMemory(input: SaveMemoryInput): Memory {
 
   const now = new Date().toISOString();
   const scope = input.scope ?? "workspace";
-  const workspacePath = input.workspacePath ?? null;
-  const repoIdentifier = input.repoIdentifier ?? null;
+  // A workspace/repo-scoped memory with a NULL key matches every workspace,
+  // so resolve the key from the process when the caller omitted it.
+  const workspacePath =
+    scope === "workspace" ? resolveWorkspacePath(input.workspacePath) : input.workspacePath ?? null;
+  const repoIdentifier =
+    scope === "repo" ? resolveRepoIdentifier(input.repoIdentifier) : input.repoIdentifier ?? null;
   const filePattern = input.filePattern ?? null;
 
   const db = getDatabase();

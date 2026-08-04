@@ -3,6 +3,7 @@ import path from "node:path";
 import os from "node:os";
 import type { IDEAdapter } from "./base.js";
 import { MEMORY_INSTRUCTIONS_BODY } from "./instructions.js";
+import { getMcpServerCommand } from "./mcp-command.js";
 
 const CLAUDE_INSTRUCTIONS = `# ContextNudge – Local Memory Instructions
 
@@ -28,10 +29,7 @@ export class ClaudeAdapter implements IDEAdapter {
       fs.mkdirSync(configDir, { recursive: true });
     }
 
-    const serverEntry = {
-      command: "npx",
-      args: ["-y", "contextnudge@latest", "--mcp"],
-    };
+    const serverEntry = getMcpServerCommand();
 
     if (fs.existsSync(configPath)) {
       const existing = JSON.parse(fs.readFileSync(configPath, "utf-8"));

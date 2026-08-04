@@ -3,7 +3,10 @@ import os from "node:os";
 import fs from "node:fs";
 
 export function getDataDir(): string {
-  const dir = path.join(os.homedir(), ".contextnudge");
+  const override = process.env.CONTEXTNUDGE_DATA_DIR;
+  const dir = override
+    ? path.resolve(override)
+    : path.join(os.homedir(), ".contextnudge");
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }

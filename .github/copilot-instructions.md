@@ -41,7 +41,7 @@ src/
 - **Package manager**: pnpm. Never suggest npm or yarn for this project.
 - **Build**: `pnpm build` (tsc + chmod 755 dist/index.js). Output goes to `dist/`.
 - **Tests**: vitest (`pnpm test`). Test files go in `tests/` or alongside source as `*.test.ts`.
-- **Node version**: ≥18. Uses native `fetch` and `fs/promises`.
+- **Node version**: ≥22 (required by `better-sqlite3` v13). Uses native `fetch` and `fs/promises`.
 - **No top-level await in non-async functions**. Action handlers in Commander must be `async` if they use await.
 
 ## Storage conventions

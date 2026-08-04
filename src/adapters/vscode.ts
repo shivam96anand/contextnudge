@@ -2,16 +2,11 @@ import fs from "node:fs";
 import path from "node:path";
 import type { IDEAdapter } from "./base.js";
 import { MEMORY_INSTRUCTIONS_BODY } from "./instructions.js";
+import { getMcpServerCommand } from "./mcp-command.js";
 
-const MCP_CONFIG = {
-  servers: {
-    contextnudge: {
-      type: "stdio",
-      command: "npx",
-      args: ["-y", "contextnudge@latest", "--mcp"],
-    },
-  },
-};
+function buildServerEntry() {
+  return { type: "stdio", ...getMcpServerCommand() };
+}
 
 const COPILOT_MARKER = "<!-- ContextNudge: Auto-generated instructions for GitHub Copilot -->";
 
@@ -45,10 +40,11 @@ export class VSCodeAdapter implements IDEAdapter {
       // Merge with existing config
       const existing = JSON.parse(fs.readFileSync(mcpPath, "utf-8"));
       existing.servers = existing.servers ?? {};
-      existing.servers.contextnudge = MCP_CONFIG.servers.contextnudge;
+      existing.servers.contextnudge = buildServerEntry();
       fs.writeFileSync(mcpPath, JSON.stringify(existing, null, 2) + "\n");
     } else {
-      fs.writeFileSync(mcpPath, JSON.stringify(MCP_CONFIG, null, 2) + "\n");
+      const config = { servers: { contextnudge: buildServerEntry() } };
+      fs.writeFileSync(mcpPath, JSON.stringify(config, null, 2) + "\n");
     }
   }
 

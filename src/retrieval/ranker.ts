@@ -1,11 +1,20 @@
 import { getDatabase } from "../storage/db.js";
 import { searchMemoriesFts, rowToMemory, type MemoryRow } from "../storage/db.js";
 import { markMemoryUsed } from "../core/memory.js";
+import { resolveWorkspacePath, resolveRepoIdentifier } from "../core/context.js";
 import type { SearchMemoryInput, SearchResult } from "../types.js";
 
 export function searchMemory(input: SearchMemoryInput): SearchResult[] {
   const db = getDatabase();
   const limit = input.limit ?? 5;
+
+  // Resolve context here too: an unscoped search would otherwise match
+  // workspace-scoped memories belonging to unrelated projects.
+  const resolved: SearchMemoryInput = {
+    ...input,
+    workspacePath: resolveWorkspacePath(input.workspacePath),
+    repoIdentifier: resolveRepoIdentifier(input.repoIdentifier) ?? undefined,
+  };
 
   // Build FTS5 query: tokenize the user query into terms
   const ftsQuery = buildFtsQuery(input.query);
@@ -16,20 +25,20 @@ export function searchMemory(input: SearchMemoryInput): SearchResult[] {
   let rows: Array<ReturnType<typeof searchMemoriesFts>[number]>;
   try {
     rows = searchMemoriesFts(db, ftsQuery, {
-      workspacePath: input.workspacePath,
-      repoIdentifier: input.repoIdentifier,
+      workspacePath: resolved.workspacePath,
+      repoIdentifier: resolved.repoIdentifier,
       limit: limit * 3, // fetch more for re-ranking
     });
   } catch {
     // FTS query syntax error — fall back to simple LIKE search
-    rows = fallbackSearch(db, input);
+    rows = fallbackSearch(db, resolved);
   }
 
   // Score and rank results
   const scored: SearchResult[] = rows.map((row) => {
     const memory = rowToMemory(row);
-    const score = computeScore(row.rank, memory, input);
-    const matchReason = buildMatchReason(memory, input);
+    const score = computeScore(row.rank, memory, resolved);
+    const matchReason = buildMatchReason(memory, resolved);
     return { memory, score, matchReason };
   });
 
@@ -159,14 +168,16 @@ function fallbackSearch(
   if (terms.length === 0) return [];
 
   const conditions = terms.map(() => "summary LIKE ?");
-  const params = terms.map((t) => `%${t}%`);
+  const params: unknown[] = terms.map((t) => `%${t}%`);
 
   let sql = `SELECT *, -1.0 as rank FROM memories WHERE status = 'active' AND (${conditions.join(" OR ")})`;
 
-  if (input.workspacePath) {
-    sql += " AND (workspace_path = ? OR workspace_path IS NULL)";
-    params.push(input.workspacePath);
-  }
+  sql += " AND (expires_at IS NULL OR expires_at > ?)";
+  params.push(new Date().toISOString());
+  sql += " AND (scope != 'workspace' OR workspace_path IS ?)";
+  params.push(input.workspacePath ?? null);
+  sql += " AND (scope != 'repo' OR repo_identifier IS ?)";
+  params.push(input.repoIdentifier ?? null);
 
   sql += " LIMIT 20";
 

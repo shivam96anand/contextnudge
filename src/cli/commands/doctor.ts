@@ -56,6 +56,31 @@ export function doctorCommand(): Command {
 
       // Check npx availability
       console.log("\n  Runtime:");
+
+      const major = Number(process.versions.node.split(".")[0]);
+      if (major >= 22) {
+        console.log(`  ✓ Node ${process.version} (native module prebuilt binary available)`);
+      } else {
+        console.log(
+          `  ✗ Node ${process.version} is unsupported — ContextNudge requires Node >= 22.\n` +
+            "      better-sqlite3 has no prebuilt binary for this version, so install\n" +
+            "      falls back to compiling from source and will usually fail."
+        );
+        allGood = false;
+      }
+
+      try {
+        const Database = (await import("better-sqlite3")).default;
+        new Database(":memory:").close();
+        console.log("  ✓ Native SQLite module loads correctly");
+      } catch (error) {
+        console.log(
+          `  ✗ Native SQLite module failed to load: ${error instanceof Error ? error.message : String(error)}\n` +
+            "      Clear the npx cache and retry: npx --yes clear-npx-cache"
+        );
+        allGood = false;
+      }
+
       try {
         const { execSync } = await import("node:child_process");
         execSync("npx --version", { stdio: "pipe" });

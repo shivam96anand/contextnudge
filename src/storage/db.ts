@@ -37,8 +37,13 @@ function runMigrations(database: Database.Database): void {
   const version = currentVersion?.v ?? 0;
 
   if (version < 1) {
-    database.exec(`
-      CREATE TABLE memories (
+    // Must be atomic. SQLite auto-commits each statement in exec(), so a
+    // partial failure previously left the schema built with no version row —
+    // every later run re-entered this block and threw "table memories already
+    // exists", permanently bricking the database with no recovery path.
+    const migrate = database.transaction(() => {
+      database.exec(`
+      CREATE TABLE IF NOT EXISTS memories (
         id TEXT PRIMARY KEY,
         summary TEXT NOT NULL,
         scope TEXT NOT NULL DEFAULT 'workspace',
@@ -86,8 +91,10 @@ function runMigrations(database: Database.Database): void {
       CREATE INDEX IF NOT EXISTS idx_memories_status ON memories(status);
       CREATE INDEX IF NOT EXISTS idx_memories_expires ON memories(expires_at);
 
-      INSERT INTO schema_version (version) VALUES (1);
+      INSERT OR IGNORE INTO schema_version (version) VALUES (1);
     `);
+    });
+    migrate();
   }
 }
 
@@ -277,6 +284,10 @@ export function listMemoriesFromDb(
     conditions.push("status = ?");
     params.push(filters.status);
   }
+  // Retention only sweeps periodically, so filter at query time as well —
+  // otherwise a past-expiry memory is served until the next sweep runs.
+  conditions.push("(expires_at IS NULL OR expires_at > ?)");
+  params.push(new Date().toISOString());
 
   let sql = "SELECT * FROM memories";
   if (conditions.length > 0) {
@@ -315,20 +326,23 @@ export function searchMemoriesFts(
     JOIN memories ON memories.rowid = memories_fts.rowid
     WHERE memories_fts MATCH ?
       AND memories.status = 'active'
+      AND (memories.expires_at IS NULL OR memories.expires_at > ?)
   `;
-  const params: unknown[] = [query];
+  const params: unknown[] = [query, new Date().toISOString()];
 
   if (filters.scope) {
     sql += " AND memories.scope = ?";
     params.push(filters.scope);
   }
-  if (filters.workspacePath) {
-    sql += " AND (memories.workspace_path = ? OR memories.workspace_path IS NULL)";
-    params.push(filters.workspacePath);
+  if (filters.workspacePath !== undefined) {
+    // Only workspace-scoped rows are constrained by workspace identity.
+    // `IS` (not `=`) so legacy NULL-keyed rows are correctly excluded.
+    sql += " AND (memories.scope != 'workspace' OR memories.workspace_path IS ?)";
+    params.push(filters.workspacePath ?? null);
   }
-  if (filters.repoIdentifier) {
-    sql += " AND (memories.repo_identifier = ? OR memories.repo_identifier IS NULL)";
-    params.push(filters.repoIdentifier);
+  if (filters.repoIdentifier !== undefined) {
+    sql += " AND (memories.scope != 'repo' OR memories.repo_identifier IS ?)";
+    params.push(filters.repoIdentifier ?? null);
   }
 
   sql += " ORDER BY rank LIMIT ?";

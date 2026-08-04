@@ -29,6 +29,8 @@ Memory is stored locally, scoped to your workspace or repo, and never leaves you
 
 ## Quick start
 
+Requires **Node.js 22 or newer**. Check with `node --version`.
+
 No global install required.
 
 ```bash

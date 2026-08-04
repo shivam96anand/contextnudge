@@ -2,20 +2,18 @@ import fs from "node:fs";
 import path from "node:path";
 import type { IDEAdapter } from "./base.js";
 import { MEMORY_INSTRUCTIONS_BODY } from "./instructions.js";
+import { getMcpServerCommand } from "./mcp-command.js";
 
 const CURSOR_RULES = `# ContextNudge – Local Memory Instructions
 
 ${MEMORY_INSTRUCTIONS_BODY}
 `;
 
-const MCP_CONFIG = {
+const MCP_CONFIG = () => ({
   mcpServers: {
-    contextnudge: {
-      command: "npx",
-      args: ["-y", "contextnudge@latest", "--mcp"],
-    },
+    contextnudge: getMcpServerCommand(),
   },
-};
+});
 
 export class CursorAdapter implements IDEAdapter {
   name = "cursor";
@@ -35,10 +33,10 @@ export class CursorAdapter implements IDEAdapter {
     if (fs.existsSync(mcpPath)) {
       const existing = JSON.parse(fs.readFileSync(mcpPath, "utf-8"));
       existing.mcpServers = existing.mcpServers ?? {};
-      existing.mcpServers.contextnudge = MCP_CONFIG.mcpServers.contextnudge;
+      existing.mcpServers.contextnudge = MCP_CONFIG().mcpServers.contextnudge;
       fs.writeFileSync(mcpPath, JSON.stringify(existing, null, 2) + "\n");
     } else {
-      fs.writeFileSync(mcpPath, JSON.stringify(MCP_CONFIG, null, 2) + "\n");
+      fs.writeFileSync(mcpPath, JSON.stringify(MCP_CONFIG(), null, 2) + "\n");
     }
   }
 
